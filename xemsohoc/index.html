@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xem Số Học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #0d6efd;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Xem Số Học</h1>
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <form id="numerologyForm">
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Họ và Tên</label>
+                        <input type="text" class="form-control" id="fullName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dateOfBirth" class="form-label">Ngày Sinh (dd/mm/yyyy)</label>
+                        <input type="text" class="form-control" id="dateOfBirth" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Xem Số Học</button>
+                </form>
+            </div>
+        </div>
+        <div id="result" class="mt-5">
+            <!-- Kết quả sẽ được hiển thị ở đây -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('numerologyForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Lấy dữ liệu từ form
+            const fullName = document.getElementById('fullName').value;
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const apiUrl = `https://xemsohoc.hns.workers.dev/?fullName=${fullName}&dateOfBirth=${dateOfBirth}`;
+
+            // Hiển thị thông báo đang tải
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p class="text-center">Đang tải dữ liệu...</p>';
+
+            try {
+                // Gọi API bằng Fetch
+                const response = await fetch(apiUrl);
+
+                // Kiểm tra phản hồi từ API
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status}`);
+                }
+
+                // Parse dữ liệu JSON
+                const data = await response.json();
+
+                // Hiển thị kết quả
+                displayResult(data);
+            } catch (error) {
+                // Hiển thị thông báo lỗi
+                resultDiv.innerHTML = `<p class="error-message">Không thể lấy dữ liệu từ API. Lỗi: ${error.message}</p>`;
+                console.error('Lỗi:', error);
+            }
+        });
+
+        function displayResult(data) {
+            
+            const translations = {
+    "nhanCach": "Nhân Cách",
+    "linhHon": "Linh Hồn",
+    "suMenh": "Sứ Mệnh",
+    "thaiDo": "Thái Độ",
+    "tenRieng": "Tên Riêng",
+    "ngaySinh": "Ngày Sinh",
+    "duongDoi": "Đường Đời",
+    "truongThanh": "Trưởng Thành",
+    "noiCam": "Nỗi Cảm",
+    "theHe": "Thế Hệ",
+    "lap": "Lặp",
+    "boSung": "Bổ Sung",
+    "canBang": "Cân Bằng",
+    "nghiep": "Nghiệp",
+    "thieu": "Thiếu",
+    "tuDuyLogic": "Tư Duy Logic",
+    "tuDuyCamXuc": "Tư Duy Cảm Xúc",
+    "tuDuyTraiNghiem": "Tư Duy Trải Nghiệm",
+    "tuDuyTrucGiac": "Tư Duy Trực Giác",
+    "tinhCachBamSinh": "Tính Cách Bẩm Sinh",
+    "phanHoiTiemThuc": "Phản Hồi Tiềm Thức",
+    "diemBaoMat": "Điểm Bảo Mật",
+    "chuKiHangNam": "Chu Kỳ Hàng Năm",
+    "cacChangDuongDoi": "Các Chặng Đường Đời",
+    "thachThuc": "Thách Thức",
+    "chuKiHangThang": "Chu Kỳ Hàng Tháng"
+};
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Xóa nội dung cũ
+
+            // Hiển thị thông tin cơ bản
+            resultDiv.innerHTML += `<h2 class="text-center">Kết Quả Số Học</h2>`;
+            resultDiv.innerHTML += `<p><strong>Họ và Tên:</strong> ${data.hoVaTen}</p>`;
+            resultDiv.innerHTML += `<p><strong>Ngày Sinh:</strong> ${data.ngaySinh}</p>`;
+
+            // Hiển thị các con số và nội dung
+            for (const key in data.cacConSo) {
+                const translatedKey = translations[key] || key; // Dịch từ khóa nếu có
+        
+        
+                resultDiv.innerHTML += `<div class="section-title">${translatedKey.toUpperCase()}</div>`;
+                resultDiv.innerHTML += `<div class="content"><strong>Giá Trị:</strong> ${data.cacConSo[key].giaTri}</div>`;
+                resultDiv.innerHTML += `<div class="content"><strong>Nội Dung:</strong> ${data.cacConSo[key].noiDung}</div>`;
+            }
+
+            // Hiển thị các chu kỳ hàng năm
+            resultDiv.innerHTML += `<div class="section-title">CHU KỲ HÀNG NĂM</div>`;
+            data.chuKiHangNam.forEach((cycle, index) => {
+                resultDiv.innerHTML += `<div class="content"><strong>Chu Kỳ ${index + 1}:</strong> ${cycle.noiDung}</div>`;
+            });
+
+            // Hiển thị các chặng đường đời
+            resultDiv.innerHTML += `<div class="section-title">CHẶNG ĐƯỜNG ĐỜI</div>`;
+            data.cacChangDuongDoi.forEach((stage, index) => {
+                resultDiv.innerHTML += `<div class="content"><strong>Chặng ${index + 1}:</strong> ${stage.noiDung}</div>`;
+            });
+
+            // Hiển thị các thách thức
+            resultDiv.innerHTML += `<div class="section-title">THÁCH THỨC</div>`;
+            data.thachThuc.forEach((challenge, index) => {
+                resultDiv.innerHTML += `<div class="content"><strong>Thách Thức ${index + 1}:</strong> ${challenge.noiDung}</div>`;
+            });
+
+            // Hiển thị các chu kỳ hàng tháng
+            resultDiv.innerHTML += `<div class="section-title">CHU KỲ HÀNG THÁNG</div>`;
+            data.chuKiHangThang.forEach((cycle, index) => {
+                resultDiv.innerHTML += `<div class="content"><strong>Chu Kỳ ${index + 1}:</strong> ${cycle.noiDung}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
