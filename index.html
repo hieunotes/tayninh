@@ -195,13 +195,6 @@ body, html {
             <p>Bình minh: <span id="sunrise"></span>, Hoàng hôn: <span id="sunset"></span></p>
         </div>
     </div>
-
-    <div class="mt-5">
-        <h4>Dự báo thời tiết</h4>
-        <div class="row" id="forecast">
-            <!-- Forecast cards will be inserted here -->
-        </div>
-    </div>
 </div>
 
 
@@ -317,22 +310,6 @@ scale:2}).then(function(canvas) {
             // Display forecast
             const forecastContainer = document.getElementById("forecast");
             const forecastData = weatherData.data.datainfo.forecast;
-
-            forecastData.forEach(day => {
-                const forecastCard = `
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <img src="${day.shadow_icon}" class="card-img-top" alt="${day.status}">
-                            <div class="card-body">
-                                <h5 class="card-title">${day.date} (${day.forecastDate})</h5>
-                                <p class="card-text">Nhiệt độ: ${day.low}°C - ${day.high}°C</p>
-                                <p class="card-text">Trạng thái: ${day.status}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                forecastContainer.insertAdjacentHTML('beforeend', forecastCard);
-            });
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
